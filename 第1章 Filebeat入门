@@ -78,3 +78,57 @@
       
       注意：如果你已经使用filebeat来索引数据到Elasticsearch，索引可能包含老的文档。你加载索引模板后，你可以通过filebeat-*删除老的文档，使Kibana
       查看到最新的文档。使用这个命令：curl -XDELETE 'http://localhost:9200/filebeat-*'
+      
+  1.5 启动filebeat
+      通过你的平台发送相应的命令启动filebeat。
+      rpm: sudo /etc/init.d/filebeat start
+      filebeat现在已经准备发送日志文件到你定义的output
+      
+  1.6 加载Kibana索引模式
+      我们没有提供预定义的面板展示filebeat的数据。然而为了你更容易的在Kibana中查看filebeat数据，我们创建了Kibana索引模式：filebeat-*。你可以使用
+      提供的脚本来加载这张模式，./scripts/import_dashboards -only-index
+      
+      关于更多运行脚本的信息，查看此章节 Importing Existing Beat Dashboards 
+      当你创建了索引模式后，你可以选择filebeat-*索引模式在Kibana中查看filebeat数据。
+  
+  1.7 常见日志格式的快速启动
+      
+  1.8 命令行选项
+      下面的命令行是Filebeat特有的：
+      -once ：当-once标记被使用，filebeat启动所有配置的harvesters和prospectors并运行每个prospector直到harvesters都关闭了。如果你设置了-once标
+              记，你也应该设置close_eof确保当到达文件地步harvester可以关闭。默认情况下close_inactive到达后harvesters关闭。
+       
+      下面的命令行，filebeat也支持，为了使用这些选项，你需要在前台启动filebeat.
+      启动filebeat,你必须使用-c config/path选项来指定配置文件的路径。
+      
+      ./filebeat -h命令可以查看所有的其他命令行
+      
+      -E <setting>=<value>
+      覆盖一个指定配置的设置：sudo ./filebeat -c filebeat.yml -E name=mybeat 此设置应用于当前正在运行的filebeat，Filebeat配置文件没有改变。
+      
+      -N 禁用发布的事件到定义的output,此选项仅用于测试。
+      
+      -c <file> 传递配置文件的地址给beat
+      
+      -configtest 测试配置文件，然后退出。此选项可用于故障诊断。
+      
+      -cpuprofile <output file> 将CPU配置数据写入指定的文件。此选项可用于故障诊断。
+      
+      -d <selectors> 启用指定选择器的调试。对于选择器，您可以指定一个逗号分隔的组件列表或者您可以使用-d "*"启用所有组件的调试。例如，-d "publish"
+      		     显示所有“publish”相关消息.
+		     
+      -e 输出日志到stderr和禁用系统日志/文件的输出
+
+      -httpprof [<host>]:<port> 启动HTTP服务进行概要分析。此选项可用于故障排除和分析。
+      
+      -memprofile <output file> 将内存配置数据写入指定的输出文件，此选项可用于故障诊断。
+      
+      -path.config 设置配置文件的默认位置
+      
+      -path.data 设置数据文件的默认位置
+      
+      -path.home 设置其他各种文件的默认位置
+      
+      -path.logs 设置日志文件的默认位置
+      
+      -v 启动详细输出显示INFO级别的消息
