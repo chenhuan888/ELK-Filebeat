@@ -51,3 +51,30 @@
       这种配置，你必须手动加载索引模板到Elasticsearch，因为自动加载模板只适用于Elasticsearch输出选项。
       
       注意：测试配置文件，先切换到filebeat的安装目录，RPM安装的使用./filebeat.sh -configtest -e.
+  
+  1.4 从Elasticsearch中加载索引模板
+      在Elasticsearch中，索引模板用于定义设置和映射，确定哪些字段应该进行分析。
+      Filebeat推荐的索引模板在Filebeat的packages中被安装。如果你接收从filebeat.yml配置文件中加载模板的默认配置，Filebeat连接Elasticsearch
+      成功之后自动加载模板，如果模板已经存在，模板将不会被覆盖除非你配置filebeat这样做。
+      
+      如果你想禁用模板的自动加载，或者你想加载自己的模板，你可以在filebeat配置文件中改变模板加载的设置。如果你选择禁用自动加载模板，你需要手动
+      加载模板，更多信息查看：配置模板加载-仅支持Elasticsearch output  手动加载模板-仅针对logstash output.
+      
+      配置模板加载：
+      默认情况下，如果启动的是Elasticsearch output的话，filebeat自动加载推荐的模板文件filebeat.template.json。你可以配置filebeat通过调整
+      filebeat.yml文件中的template.name和template.path选项来加载不同的模板：
+      output.elasticsearch:
+  	hosts: ["localhost:9200"]
+  	template.name: "filebeat"
+  	template.path: "filebeat.template.json"
+  	template.overwrite: false
+      默认情况下，如果template在索引中已经存在，它不会被覆盖。为了覆盖一个已存在的模板，在配置文件中设置template.overwrite: true。
+      禁用模板自动加载，在Elasticsearch output部分下注释掉模板部分。
+      
+      手动加载模板：
+      如果你禁用了模板自动加载，你需要运行下面的命令来加载模板：
+      curl -H 'Content-Type: application/json' -XPUT 'http://localhost:9200/_template/filebeat' -d@/etc/filebeat/filebeat.template.json
+      这里的localhost:9200是监听中Elasticsearch的IP和端口。
+      
+      注意：如果你已经使用filebeat来索引数据到Elasticsearch，索引可能包含老的文档。你加载索引模板后，你可以通过filebeat-*删除老的文档，使Kibana
+      查看到最新的文档。使用这个命令：curl -XDELETE 'http://localhost:9200/filebeat-*'
