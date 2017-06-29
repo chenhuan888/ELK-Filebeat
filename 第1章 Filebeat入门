@@ -1,0 +1,41 @@
+1.开始FileBeat
+  1.1 安装filebeat
+      运行filebeat之前，你需要安装和配置Elastic栈。查看beats和Elastic栈入门。下载并安装filebeat，根据您的系统使用命令行安装。
+      Rpm: curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.4.3-x86_64.rpm
+      其他各种操作系统的安装，此处省略，请查看源文档。
+  1.2 配置filebeat
+      配置filebeat,你需要编辑配置文件。
+      对于rmp和deb的系统，可在/etc/filebeat/filebeat.yml发现配置文件。
+      在Docker下，它位于/usr/share/filebeat目录下。
+      Mac和win操作系统，查看刚刚提取的归档文件。
+      还有一个完整的示例配置文件称为filebeat.full.yml显示所有非过时的选项。
+      有关配置文件的结构，请参考beats平台的配置文件格式章节。
+      下面是filebeat.yml文件中的部分filebeat样例，对于大多数的配置选项,filebeat使用预定义的默认值。
+			
+      filebeat.prospectors:
+      - input_type: log
+        paths:
+          - /var/log/*.log	
+          #- c:\programdata\elasticsearch\logs\*
+			
+      配置filebeat:
+      1.定义你的日志文件路径
+        最基本的filebeat配置，你可以用一个单一的路径定义一个单独的prospector。例如:
+        filebeat.prospectors:
+        - input_type: log
+        paths:
+          - /var/log/*.log
+          
+        在这个例子中,prospector收获/var/log/*.log下的所有文件，这就意味着filebeat将收获/var/log/目录下的所有已.log结尾的文件。
+        Golang Glob支持的所有正则，在这里也支持。
+        
+        为了从预定义的子目录中获取所有文件，可以使用下面的正则：
+        /var/log/*/*.log 这个获取/var/log/目录下的所有子目录的.log文件。它不从/var/log/目录本身获取.log文件。
+        目前在目录的所有子目录中递归获取所有文件是不可能的。
+        
+      2.如果你要发送输出到Elasticsearch,设置filebeat可以发现安装的elasticsearch的IP地址和端口。
+        output.elasticsearch:
+          hosts: ["192.168.1.42:9200"]
+        如果你要发送输出到Logstash，查看第三节 配置filebeat使用logstash。
+        
+      在启动filebeat之前，你应该看看配置文件中的配置选项，如/etc/filebeat/filebeat.yml。有关这些选项的更多信息，请参见配置选项（参考）
